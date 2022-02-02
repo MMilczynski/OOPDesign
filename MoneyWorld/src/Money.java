@@ -20,16 +20,14 @@ public class Money {
         this.currency = currency;
     }
 
-    public double getValue() {
-        return value;
+    private double normalize() {
+        return this.currency == Currency.USD
+                ? this.value
+                : this.value * this.currency.convertRateTo(Currency.USD);
     }
 
-    public Currency getCurrency() {
-        return this.currency;
-    }
-
-    public void setValue(double value) {
-        this.value = value;
+    public boolean isGreaterThan(Money op) {
+        return this.normalize() > op.normalize();
     }
 
     public static void main(String[] args) {
@@ -45,23 +43,10 @@ class Test {
     }
 
     public static void test() {
-        /*
-         * previous code
-         * 
-         * Money balance = new Money(1.0);
-         * Money request = new Money(3.0);
-         * 
-         * now I need to modify those two calls and add conversion operation.
-         * Error-prone code and hard to maintain
-         */
         Money balance = new Money(1.0, Currency.EURO);
         Money request = new Money(3.0, Currency.USD);
 
-        double normalizedBalance = balance.getValue() * balance.getCurrency().convertRateTo(Currency.USD);
-
-        double normalizedRequest = request.getValue() * request.getCurrency().convertRateTo(Currency.USD);
-
-        if (normalizedBalance > normalizedRequest)
+        if (balance.isGreaterThan(request))
             dispenseFunds(request);
     }
 }
